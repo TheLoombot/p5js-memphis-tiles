@@ -93,7 +93,7 @@ function draw() {
     squiggles: int(random(3, 6)),
     isoTriangles: int(random(2, 4)),
     ovals: int(random(2, 4)),
-    sineWaves: int(random(1, 1)),
+    sineWaves: int(random(1, 3)),
     dotGrids: int(random(1, 1))
   };
 
@@ -243,8 +243,8 @@ function draw() {
   // Place dot grids
   for (let i = 0; i < shapeCounts.dotGrids; i++) {
     let gridSize = random(10, 20);
-    let spacing = 5 * random(0.96, 1.44) * shapeSizeScale;
-    let dotSize = random(3) * random(0.96, 1.44) * shapeSizeScale;
+    let spacing = 5 * random(1, 1.44) * shapeSizeScale;
+    let dotSize = 3 * random(1, 1.44) * shapeSizeScale;
     let len = gridSize * spacing;
     let r = len / 2 + 10; // Bounding radius
     let { x, y } = getNonOverlappingPosition(r);
