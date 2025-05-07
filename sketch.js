@@ -110,22 +110,20 @@ function draw() {
   availableShapes.forEach(shape => {
     switch(shape) {
       case 'squares':
-        shapeCounts[shape] = int(random(2, 4));
-        break;
       case 'triangles':
+      case 'isoTriangles':
+      case 'ovals':
+              shapeCounts[shape] = int(random(2, 4));
+        break;
       case 'semicircles':
         shapeCounts[shape] = int(random(3, 5));
         break;
       case 'squiggles':
         shapeCounts[shape] = int(random(3, 6));
         break;
-      case 'isoTriangles':
-      case 'ovals':
-        shapeCounts[shape] = int(random(2, 4));
-        break;
       case 'sineWaves':
       case 'dotGrids':
-        shapeCounts[shape] = int(random(1, 2));
+        shapeCounts[shape] = int(random(1, 3));
         break;
     }
   });
