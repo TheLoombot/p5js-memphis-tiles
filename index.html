@@ -162,6 +162,15 @@
         <input type="radio" id="shapes-large" name="shapes" value="large">
         <label for="shapes-large">█ Large</label>
       </div>
+      <div class="size-selector">
+        <div class="control-header">Shape Count</div>
+        <input type="radio" id="count-fewer" name="count" value="fewer">
+        <label for="count-fewer">🎯 Fewer</label>
+        <input type="radio" id="count-usual" name="count" value="usual" checked>
+        <label for="count-usual">🎨 The Usual Amount</label>
+        <input type="radio" id="count-many" name="count" value="many">
+        <label for="count-many">🎪 Far Too Many</label>
+      </div>
     </div>
   </div>
   <div class="source-link">
@@ -200,6 +209,17 @@
       input.addEventListener('change', function() {
         if (window.setShapeSize) {
           window.setShapeSize(this.value);
+          if (window.regenerateTile) window.regenerateTile();
+        }
+      });
+    });
+
+    // Shape count selector functionality
+    const countInputs = document.querySelectorAll('input[name="count"]');
+    countInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        if (window.setShapeCount) {
+          window.setShapeCount(this.value);
           if (window.regenerateTile) window.regenerateTile();
         }
       });
