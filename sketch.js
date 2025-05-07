@@ -188,10 +188,11 @@ function drawWrappedDotGrid(dotColor) {
   push();
   fill(dotColor);
   noStroke();
+  const dotSize = random(6, 9);  // Single random size for all dots
   for (let x = -40; x < width + 80; x += 40) {
     for (let y = -40; y < height + 80; y += 40) {
       drawWrappedShape(x, y, 0, () => {
-        ellipse(0, 0, 6);
+        ellipse(0, 0, dotSize);
       });
     }
   }
