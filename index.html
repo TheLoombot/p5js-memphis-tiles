@@ -59,6 +59,14 @@
       padding: 1em;
       border-radius: 8px;
     }
+    .control-header {
+      color: #999;
+      font-size: 0.9em;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5em;
+      text-align: center;
+      font-size: 1.1em;
+    }
     .size-selector input[type="radio"] {
       display: none;
     }
@@ -137,12 +145,22 @@
         <button id="download-btn">💾 Download PNG</button>
       </div>
       <div class="size-selector">
+        <div class="control-header">Tile Size</div>
         <input type="radio" id="size-small" name="size" value="small">
         <label for="size-small">🐣 Small</label>
         <input type="radio" id="size-medium" name="size" value="medium" checked>
         <label for="size-medium">🐥 Medium</label>
         <input type="radio" id="size-large" name="size" value="large">
         <label for="size-large">🐤 Large</label>
+      </div>
+      <div class="size-selector">
+        <div class="control-header">Shapes Size</div>
+        <input type="radio" id="shapes-small" name="shapes" value="small">
+        <label for="shapes-small">▂ Small</label>
+        <input type="radio" id="shapes-medium" name="shapes" value="medium" checked>
+        <label for="shapes-medium">▆ Medium</label>
+        <input type="radio" id="shapes-large" name="shapes" value="large">
+        <label for="shapes-large">█ Large</label>
       </div>
     </div>
   </div>
@@ -171,6 +189,17 @@
             large: 800
           };
           window.resizeCanvas(dimensions[size], dimensions[size]);
+          if (window.regenerateTile) window.regenerateTile();
+        }
+      });
+    });
+
+    // Shape size selector functionality
+    const shapesInputs = document.querySelectorAll('input[name="shapes"]');
+    shapesInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        if (window.setShapeSize) {
+          window.setShapeSize(this.value);
           if (window.regenerateTile) window.regenerateTile();
         }
       });

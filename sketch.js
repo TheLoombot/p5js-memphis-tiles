@@ -10,6 +10,7 @@
 let shadowColor = '#444444'; // RGB(68, 68, 68) - Medium Gray
 let shadowOffset = 3; // Offset for drop shadow
 let placedShapes = []; // Stores placed shapes to avoid overlap
+let shapeSizeScale = 1.0; // Default scale factor for shapes (medium)
 
 function setup() {
   pixelDensity(1);
@@ -23,6 +24,20 @@ function setup() {
   window.resizeCanvas = resizeCanvas;
   window.regenerateTile = regenerateTile;
   window.saveCanvas = saveCanvas;
+  window.setShapeSize = setShapeSize;
+  
+  // Initialize with medium shape size
+  setShapeSize('medium');
+}
+
+// Set the shape size scale factor
+function setShapeSize(size) {
+  const scales = {
+    small: 1.0,    // Current medium becomes small
+    medium: 1.3,   // Current large becomes medium
+    large: 1.82    // New large (1.3 * 1.4)
+  };
+  shapeSizeScale = scales[size] || 1.0;
 }
 
 // Redraws the tile (can be called externally)
@@ -69,7 +84,7 @@ function draw() {
 
   // Place squares
   for (let i = 0; i < shapeCounts.squares; i++) {
-    let boxSize = 75 * random(0.96, 1.44);
+    let boxSize = 75 * random(0.96, 1.44) * shapeSizeScale;
     let r = sqrt(2 * sq(boxSize / 2)); // Diagonal radius
     let { x, y } = getNonOverlappingPosition(r);
     let rot = random(360);
@@ -81,7 +96,7 @@ function draw() {
 
   // Place triangles
   for (let i = 0; i < shapeCounts.triangles; i++) {
-    let side = 90 * random(0.96, 1.44);
+    let side = 90 * random(0.96, 1.44) * shapeSizeScale;
     let h = (sqrt(3) / 2) * side; // Height of equilateral triangle
     let r = sqrt(sq(side / 2) + sq(h / 2)); // Circumradius
     let { x, y } = getNonOverlappingPosition(r);
@@ -98,7 +113,7 @@ function draw() {
 
   // Place semicircles
   for (let i = 0; i < shapeCounts.semicircles; i++) {
-    let d = 90 * random(0.96, 1.44); // Diameter
+    let d = 90 * random(0.96, 1.44) * shapeSizeScale; // Diameter
     let r = d / 2;
     let { x, y } = getNonOverlappingPosition(r);
     let rot = random(360);
@@ -111,8 +126,8 @@ function draw() {
   // Place squiggles
   for (let i = 0; i < shapeCounts.squiggles; i++) {
     let humps = int(random(3, 6));
-    let spacing = 18 * random(0.96, 1.44);
-    let amplitude = 13.5 * random(0.96, 1.44);
+    let spacing = 18 * random(0.96, 1.44) * shapeSizeScale;
+    let amplitude = 13.5 * random(0.96, 1.44) * shapeSizeScale;
     let len = humps * spacing * TWO_PI / 10;
     let r = sqrt(sq(len / 2) + sq(amplitude)) + 10; // Bounding radius
     let { x, y } = getNonOverlappingPosition(r);
@@ -123,7 +138,7 @@ function draw() {
       translate(shadowOffset, shadowOffset);
       rotate(rot);
       stroke(shadowColor);
-      strokeWeight(4);
+      strokeWeight(4 * shapeSizeScale);
       noFill();
       beginShape();
       for (let j = 0; j < len; j++) {
@@ -137,7 +152,7 @@ function draw() {
       push();
       rotate(rot);
       stroke(colorMap.squiggles);
-      strokeWeight(4);
+      strokeWeight(4 * shapeSizeScale);
       noFill();
       beginShape();
       for (let j = 0; j < len; j++) {
