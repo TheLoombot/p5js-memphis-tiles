@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>p5.js Webpage Example</title>
+  <title>Memphis Tile Generator</title>
   <style>
     body {
       display: flex;
@@ -13,6 +13,20 @@
       font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
       min-height: 100vh;
       padding: 2em;
+    }
+    .title-section {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .title-section h1 {
+      color: #A29BFE;
+      margin-bottom: 0.5em;
+    }
+    .lyrics {
+      color: #666;
+      font-size: 0.9em;
+      line-height: 1.4;
+      font-style: italic;
     }
     #sketch-holder { 
       display: flex;
@@ -63,6 +77,14 @@
   </style>
 </head>
 <body>
+  <div class="title-section">
+    <h1>Memphis Tile Generator</h1>
+    <div class="lyrics">
+      When I wake up in the morning<br>
+      And the alarm gives out a warning<br>
+      And I don't think I'll ever make it on time
+    </div>
+  </div>
   <div class="controls">
     <button id="regen-btn">🔄 Regenerate Tile</button>
     <button id="download-btn">💾 Download PNG</button>
