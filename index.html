@@ -28,35 +28,77 @@
       line-height: 1.4;
       font-style: italic;
     }
-    #sketch-holder { 
+    .main-content {
+      display: flex;
+      gap: 2em;
+      align-items: flex-start;
+    }
+    .canvas-container {
+      width: 800px;  /* Max canvas size */
+      height: 800px;
       display: flex;
       justify-content: center;
-      width: 100%;
+      align-items: center;
+    }
+    #sketch-holder {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      min-width: 200px;
+    }
+    .size-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      background: #333;
+      padding: 1em;
+      border-radius: 8px;
+    }
+    .size-selector input[type="radio"] {
+      display: none;
+    }
+    .size-selector label {
+      padding: 8px 16px;
+      color: #999;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .size-selector input[type="radio"]:checked + label {
+      background: #A29BFE;
+      color: #222;
+    }
+    .size-selector label:hover {
+      color: #fff;
     }
     .controls {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       gap: 1em;
-      padding: 1em 0;
-      margin-bottom: 2em;
       width: 100%;
     }
     button {
       background: #A29BFE;
-      color: #222; /* Lemon Yellow from palette */
+      color: #222;
       border: none;
       border-radius: 8px;
       padding: 0.7em 1.5em;
-      margin: 0 0.5em;
       font-size: 1.1em;
       font-family: inherit;
       font-weight: 600;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       cursor: pointer;
       transition: background 0.2s, color 0.2s, transform 0.1s;
+      width: 100%;
     }
     button:hover, button:focus {
-      background: #FF6EC7; /* Neon Pink from palette */
+      background: #FF6EC7;
       color: #222;
       transform: translateY(-2px) scale(1.04);
       outline: none;
@@ -85,11 +127,25 @@
       And I don't think I'll ever make it on time
     </div>
   </div>
-  <div class="controls">
-    <button id="regen-btn">🔄 Regenerate Tile</button>
-    <button id="download-btn">💾 Download PNG</button>
+  <div class="main-content">
+    <div class="canvas-container">
+      <div id="sketch-holder"></div>
+    </div>
+    <div class="controls-panel">
+      <div class="controls">
+        <button id="regen-btn">🔄 Regenerate Tile</button>
+        <button id="download-btn">💾 Download PNG</button>
+      </div>
+      <div class="size-selector">
+        <input type="radio" id="size-small" name="size" value="small">
+        <label for="size-small">🐣 Small</label>
+        <input type="radio" id="size-medium" name="size" value="medium" checked>
+        <label for="size-medium">🐥 Medium</label>
+        <input type="radio" id="size-large" name="size" value="large">
+        <label for="size-large">🐤 Large</label>
+      </div>
+    </div>
   </div>
-  <div id="sketch-holder"></div>
   <div class="source-link">
     <a href="https://github.com/TheLoombot/p5js-memphis-tiles" target="_blank">Source</a>
   </div>
@@ -102,6 +158,23 @@
     document.getElementById('download-btn').onclick = function() {
       if (window.saveCanvas) window.saveCanvas('image', 'png');
     };
+    
+    // Size selector functionality
+    const sizeInputs = document.querySelectorAll('input[name="size"]');
+    sizeInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        if (window.resizeCanvas) {
+          const size = this.value;
+          const dimensions = {
+            small: 400,
+            medium: 600,
+            large: 800
+          };
+          window.resizeCanvas(dimensions[size], dimensions[size]);
+          if (window.regenerateTile) window.regenerateTile();
+        }
+      });
+    });
   </script>
 </body>
 </html> 

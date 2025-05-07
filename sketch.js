@@ -13,11 +13,16 @@ let placedShapes = []; // Stores placed shapes to avoid overlap
 
 function setup() {
   pixelDensity(1);
-  let cnv = createCanvas(600, 600);
+  let cnv = createCanvas(600, 600);  // Start with medium size
   cnv.parent('sketch-holder');
   angleMode(DEGREES);
   rectMode(CENTER);
   noLoop(); // Only draw once unless manually redrawn
+  
+  // Expose functions to window for external access
+  window.resizeCanvas = resizeCanvas;
+  window.regenerateTile = regenerateTile;
+  window.saveCanvas = saveCanvas;
 }
 
 // Redraws the tile (can be called externally)
