@@ -68,7 +68,9 @@ function draw() {
     triangles: palette.pop(),
     squares: palette.pop(),
     semicircles: palette.pop(),
-    squiggles: palette.pop()
+    squiggles: palette.pop(),
+    isoTriangles: palette.pop(),
+    ovals: palette.pop()
   };
 
   background(colorMap.background); // Set background color
@@ -79,7 +81,9 @@ function draw() {
     squares: int(random(2, 4)),
     triangles: int(random(3, 5)),
     semicircles: int(random(3, 5)),
-    squiggles: int(random(3, 6))
+    squiggles: int(random(3, 6)),
+    isoTriangles: int(random(2, 4)),
+    ovals: int(random(2, 4))
   };
 
   // Place squares
@@ -162,6 +166,36 @@ function draw() {
       }
       endShape();
       pop();
+    });
+  }
+
+  // Place isosceles triangles
+  for (let i = 0; i < shapeCounts.isoTriangles; i++) {
+    let base = 60 * random(0.96, 1.44) * shapeSizeScale;
+    let height = 70 * random(0.96, 1.44) * shapeSizeScale;
+    let r = sqrt(sq(base / 2) + sq(height)); // Circumradius
+    let { x, y } = getNonOverlappingPosition(r);
+    let rot = random(360);
+    drawWrappedShape(x, y, r, () => {
+      drawDropShadow(() => {
+        triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+      }, rot);
+      drawMainShape(colorMap.isoTriangles, () => {
+        triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+      }, rot);
+    });
+  }
+
+  // Place ovals
+  for (let i = 0; i < shapeCounts.ovals; i++) {
+    let w = 75 * random(0.96, 1.44) * shapeSizeScale;
+    let h = 45 * random(0.96, 1.44) * shapeSizeScale;
+    let r = sqrt(sq(w/2) + sq(h/2)); // Circumradius
+    let { x, y } = getNonOverlappingPosition(r);
+    let rot = random(360);
+    drawWrappedShape(x, y, r, () => {
+      drawDropShadow(() => ellipse(0, 0, w, h), rot);
+      drawMainShape(colorMap.ovals, () => ellipse(0, 0, w, h), rot);
     });
   }
 
