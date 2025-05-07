@@ -58,7 +58,14 @@ function draw() {
     '#1ABC9C', // RGB(26, 188, 156) - Turquoise
     '#FF3CAC', // RGB(255, 60, 172) - Hot Pink
     '#FFF200', // RGB(255, 242, 0) - Bright Yellow
-    '#A0E7E5'  // RGB(160, 231, 229) - Aqua
+    '#A0E7E5', // RGB(160, 231, 229) - Aqua
+    '#FF9F43', // RGB(255, 159, 67) - Coral Orange
+    '#00D2D3', // RGB(0, 210, 211) - Teal
+    '#54A0FF', // RGB(84, 160, 255) - Electric Blue
+    '#5F27CD', // RGB(95, 39, 205) - Purple
+    '#FF9FF3', // RGB(255, 159, 243) - Bubblegum Pink
+    '#00D894', // RGB(0, 216, 148) - Mint Green
+    '#FECA57'  // RGB(254, 202, 87) - Golden Yellow
   ]);
 
   // Assign colors to roles
@@ -70,7 +77,9 @@ function draw() {
     semicircles: palette.pop(),
     squiggles: palette.pop(),
     isoTriangles: palette.pop(),
-    ovals: palette.pop()
+    ovals: palette.pop(),
+    sineWaves: palette.pop(),
+    dotGrids: palette.pop()
   };
 
   background(colorMap.background); // Set background color
@@ -83,7 +92,9 @@ function draw() {
     semicircles: int(random(3, 5)),
     squiggles: int(random(3, 6)),
     isoTriangles: int(random(2, 4)),
-    ovals: int(random(2, 4))
+    ovals: int(random(2, 4)),
+    sineWaves: int(random(1, 1)),
+    dotGrids: int(random(1, 1))
   };
 
   // Place squares
@@ -196,6 +207,62 @@ function draw() {
     drawWrappedShape(x, y, r, () => {
       drawDropShadow(() => ellipse(0, 0, w, h), rot);
       drawMainShape(colorMap.ovals, () => ellipse(0, 0, w, h), rot);
+    });
+  }
+
+  // Place parallel sine waves
+  for (let i = 0; i < shapeCounts.sineWaves; i++) {
+    let humps = random(10, 20);
+    let spacing = 18 * random(0.96, 1.44) * shapeSizeScale;
+    let amplitude = random(1,3) * random(0.96, 1.44) * shapeSizeScale;
+    let len = humps * spacing * TWO_PI / 20;
+    let r = sqrt(sq(len / 2) + sq(amplitude)) + 10; // Bounding radius
+    let { x, y } = getNonOverlappingPosition(r);
+    let rot = random(360);
+    drawWrappedShape(x, y, r, () => {
+      // Draw main sinewave pattern
+      push();
+      rotate(rot);
+      stroke(colorMap.sineWaves);
+      strokeWeight(1 * shapeSizeScale);
+      noFill();
+      // Draw 7 parallel sine waves
+      for (let offset = -50; offset <= 50; offset += 5) {
+        beginShape();
+        for (let j = 0; j < len; j++) {
+          let px = j;
+          let py = cos(j * (360 / spacing)) * amplitude + offset;
+          vertex(px, py);
+        }
+        endShape();
+      }
+      pop();
+    });
+  }
+
+  // Place dot grids
+  for (let i = 0; i < shapeCounts.dotGrids; i++) {
+    let gridSize = random(10, 20);
+    let spacing = 5 * random(0.96, 1.44) * shapeSizeScale;
+    let dotSize = random(3) * random(0.96, 1.44) * shapeSizeScale;
+    let len = gridSize * spacing;
+    let r = len / 2 + 10; // Bounding radius
+    let { x, y } = getNonOverlappingPosition(r);
+    let rot = random(360);
+    drawWrappedShape(x, y, r, () => {
+      push();
+      rotate(rot);
+      fill(colorMap.dotGrids);
+      noStroke();
+      // Draw grid of dots
+      for (let offset = -50; offset <= 50; offset += 10) {
+        for (let j = 0; j < len; j += spacing) {
+          let px = j;
+          let py = offset;
+          ellipse(px, py, dotSize);
+        }
+      }
+      pop();
     });
   }
 
