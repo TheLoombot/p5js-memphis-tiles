@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>p5.js Webpage Example</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      background: #222;
+      font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      padding: 2em;
+    }
+    #sketch-holder { 
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      padding: 1em 0;
+      margin-bottom: 2em;
+      width: 100%;
+    }
+    button {
+      background: #A29BFE;
+      color: #222; /* Lemon Yellow from palette */
+      border: none;
+      border-radius: 8px;
+      padding: 0.7em 1.5em;
+      margin: 0 0.5em;
+      font-size: 1.1em;
+      font-family: inherit;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+    button:hover, button:focus {
+      background: #FF6EC7; /* Neon Pink from palette */
+      color: #222;
+      transform: translateY(-2px) scale(1.04);
+      outline: none;
+    }
+    .source-link {
+      margin-top: 2em;
+      text-align: center;
+    }
+    .source-link a {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.9em;
+      transition: color 0.2s;
+    }
+    .source-link a:hover {
+      color: #A29BFE;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button id="regen-btn">🔄 Regenerate Tile</button>
+    <button id="download-btn">💾 Download PNG</button>
+  </div>
+  <div id="sketch-holder"></div>
+  <div class="source-link">
+    <a href="https://github.com/TheLoombot/p5js-memphis-tiles" target="_blank">Source</a>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script src="sketch.js"></script>
+  <script>
+    document.getElementById('regen-btn').onclick = function() {
+      if (window.regenerateTile) window.regenerateTile();
+    };
+    document.getElementById('download-btn').onclick = function() {
+      if (window.saveCanvas) window.saveCanvas('image', 'jpg');
+    };
+  </script>
+</body>
+</html> 
