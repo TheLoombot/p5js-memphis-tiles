@@ -12,6 +12,7 @@ let shadowOffset = 3; // Offset for drop shadow
 let placedShapes = []; // Stores placed shapes to avoid overlap
 let shapeSizeScale = 1.0; // Default scale factor for shapes (medium)
 let shapeCountMode = 'usual'; // Default to usual amount of shapes
+let fillProbability = 0.85; // 85% chance of shapes being filled
 
 function setup() {
   pixelDensity(1);
@@ -136,9 +137,21 @@ function draw() {
       let r = sqrt(2 * sq(boxSize / 2)); // Diagonal radius
       let { x, y } = getNonOverlappingPosition(r);
       let rot = random(360);
+      let isFilled = random() < fillProbability;
       drawWrappedShape(x, y, r, () => {
-        drawDropShadow(() => rect(0, 0, boxSize, boxSize), rot);
-        drawMainShape(colorMap.squares, () => rect(0, 0, boxSize, boxSize), rot);
+        if (isFilled) {
+          drawDropShadow(() => rect(0, 0, boxSize, boxSize), rot);
+        }
+        drawMainShape(colorMap.squares, () => {
+          if (isFilled) {
+            rect(0, 0, boxSize, boxSize);
+          } else {
+            noFill();
+            stroke(shadowColor);
+            strokeWeight(3);
+            rect(0, 0, boxSize, boxSize);
+          }
+        }, rot);
       });
     }
   }
@@ -151,12 +164,22 @@ function draw() {
       let r = sqrt(sq(side / 2) + sq(h / 2)); // Circumradius
       let { x, y } = getNonOverlappingPosition(r);
       let rot = random(360);
+      let isFilled = random() < fillProbability;
       drawWrappedShape(x, y, r, () => {
-        drawDropShadow(() => {
-          triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
-        }, rot);
+        if (isFilled) {
+          drawDropShadow(() => {
+            triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+          }, rot);
+        }
         drawMainShape(colorMap.triangles, () => {
-          triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+          if (isFilled) {
+            triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+          } else {
+            noFill();
+            stroke(shadowColor);
+            strokeWeight(3);
+            triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+          }
         }, rot);
       });
     }
@@ -169,9 +192,21 @@ function draw() {
       let r = d / 2;
       let { x, y } = getNonOverlappingPosition(r);
       let rot = random(360);
+      let isFilled = random() < fillProbability;
       drawWrappedShape(x, y, r, () => {
-        drawDropShadow(() => arc(0, 0, d, d, 0, 180, PIE), rot);
-        drawMainShape(colorMap.semicircles, () => arc(0, 0, d, d, 0, 180, PIE), rot);
+        if (isFilled) {
+          drawDropShadow(() => arc(0, 0, d, d, 0, 180, PIE), rot);
+        }
+        drawMainShape(colorMap.semicircles, () => {
+          if (isFilled) {
+            arc(0, 0, d, d, 0, 180, PIE);
+          } else {
+            noFill();
+            stroke(shadowColor);
+            strokeWeight(3);
+            arc(0, 0, d, d, 0, 180, PIE);
+          }
+        }, rot);
       });
     }
   }
@@ -228,12 +263,22 @@ function draw() {
       let r = sqrt(sq(base / 2) + sq(height)); // Circumradius
       let { x, y } = getNonOverlappingPosition(r);
       let rot = random(360);
+      let isFilled = random() < fillProbability;
       drawWrappedShape(x, y, r, () => {
-        drawDropShadow(() => {
-          triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
-        }, rot);
+        if (isFilled) {
+          drawDropShadow(() => {
+            triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+          }, rot);
+        }
         drawMainShape(colorMap.isoTriangles, () => {
-          triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+          if (isFilled) {
+            triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+          } else {
+            noFill();
+            stroke(shadowColor);
+            strokeWeight(3);
+            triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+          }
         }, rot);
       });
     }
@@ -247,9 +292,21 @@ function draw() {
       let r = sqrt(sq(w/2) + sq(h/2)); // Circumradius
       let { x, y } = getNonOverlappingPosition(r);
       let rot = random(360);
+      let isFilled = random() < fillProbability;
       drawWrappedShape(x, y, r, () => {
-        drawDropShadow(() => ellipse(0, 0, w, h), rot);
-        drawMainShape(colorMap.ovals, () => ellipse(0, 0, w, h), rot);
+        if (isFilled) {
+          drawDropShadow(() => ellipse(0, 0, w, h), rot);
+        }
+        drawMainShape(colorMap.ovals, () => {
+          if (isFilled) {
+            ellipse(0, 0, w, h);
+          } else {
+            noFill();
+            stroke(shadowColor);
+            strokeWeight(3);
+            ellipse(0, 0, w, h);
+          }
+        }, rot);
       });
     }
   }
