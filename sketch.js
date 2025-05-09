@@ -50,7 +50,7 @@ function setShapeCount(mode) {
 
 // Get available shapes based on count mode
 function getAvailableShapes() {
-  const allShapes = ['squares', 'triangles', 'semicircles', 'squiggles', 'isoTriangles', 'ovals', 'sineWaves', 'dotGrids'];
+  const allShapes = ['squares', 'triangles', 'semicircles', 'squiggles', 'isoTriangles', 'ovals', 'sineWaves', 'dotGrids', 'stripeyCircles'];
   switch(shapeCountMode) {
     case 'fewer':
       return shuffle(allShapes).slice(0, 4);
@@ -114,7 +114,7 @@ function draw() {
       case 'triangles':
       case 'isoTriangles':
       case 'ovals':
-              shapeCounts[shape] = int(random(2, 4));
+        shapeCounts[shape] = int(random(2, 4));
         break;
       case 'semicircles':
         shapeCounts[shape] = int(random(3, 5));
@@ -126,250 +126,258 @@ function draw() {
       case 'dotGrids':
         shapeCounts[shape] = int(random(1, 3));
         break;
+      case 'stripeyCircles':
+        shapeCounts[shape] = int(random(1, 3));
+        break;
     }
   });
 
-  // Place shapes based on what's available
-  if (availableShapes.includes('squares')) {
-    // Place squares
-    for (let i = 0; i < shapeCounts.squares; i++) {
-      let boxSize = 75 * random(0.96, 1.44) * shapeSizeScale;
-      let r = sqrt(2 * sq(boxSize / 2)); // Diagonal radius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      let isFilled = random() < fillProbability;
-      drawWrappedShape(x, y, r, () => {
-        if (isFilled) {
-          drawDropShadow(() => rect(0, 0, boxSize, boxSize), rot);
-        }
-        drawMainShape(colorMap.squares, () => {
-          if (isFilled) {
-            rect(0, 0, boxSize, boxSize);
-          } else {
+  // Drawing order: bottom to top
+  const drawOrder = [
+    'stripeyCircles',
+    'squares',
+    'semicircles',
+    'isoTriangles',
+    'triangles',
+    'squiggles',
+    'dotGrids',
+    'sineWaves'
+  ];
+
+  drawOrder.forEach(shape => {
+    if (!availableShapes.includes(shape)) return;
+    switch(shape) {
+      case 'stripeyCircles':
+        for (let i = 0; i < shapeCounts.stripeyCircles; i++) {
+          let d = 90 * random(0.96, 1.44) * shapeSizeScale;
+          let r = d / 2;
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          let stripeCount = int(random(6, 10));
+          let stripeWidth = d / (stripeCount * 2 - 1);
+          let stripeColor = colorMap.stripeyCircles;
+          drawWrappedShape(x, y, r, () => {
+            push();
+            rotate(rot);
+            drawingContext.save();
+            drawingContext.beginPath();
+            drawingContext.arc(0, 0, r, 0, 2 * Math.PI);
+            drawingContext.clip();
+            stroke(stripeColor);
+            strokeWeight(stripeWidth);
+            strokeCap(SQUARE);
             noFill();
-            stroke(shadowColor);
-            strokeWeight(3);
-            rect(0, 0, boxSize, boxSize);
-          }
-        }, rot);
-      });
-    }
-  }
-
-  if (availableShapes.includes('triangles')) {
-    // Place triangles
-    for (let i = 0; i < shapeCounts.triangles; i++) {
-      let side = 90 * random(0.96, 1.44) * shapeSizeScale;
-      let h = (sqrt(3) / 2) * side; // Height of equilateral triangle
-      let r = sqrt(sq(side / 2) + sq(h / 2)); // Circumradius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      let isFilled = random() < fillProbability;
-      drawWrappedShape(x, y, r, () => {
-        if (isFilled) {
-          drawDropShadow(() => {
-            triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
-          }, rot);
+            let fullLen = d * 1.5;
+            for (let i = 0; i < stripeCount; i++) {
+              let offset = (i - (stripeCount-1)/2) * 2 * stripeWidth;
+              line(offset, -fullLen, offset, fullLen);
+            }
+            drawingContext.restore();
+            pop();
+          });
         }
-        drawMainShape(colorMap.triangles, () => {
-          if (isFilled) {
-            triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
-          } else {
+        break;
+      case 'squares':
+        for (let i = 0; i < shapeCounts.squares; i++) {
+          let boxSize = 75 * random(0.96, 1.44) * shapeSizeScale;
+          let r = sqrt(2 * sq(boxSize / 2)); // Diagonal radius
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          let isFilled = random() < fillProbability;
+          drawWrappedShape(x, y, r, () => {
+            if (isFilled) {
+              drawDropShadow(() => rect(0, 0, boxSize, boxSize), rot);
+            }
+            drawMainShape(colorMap.squares, () => {
+              if (isFilled) {
+                rect(0, 0, boxSize, boxSize);
+              } else {
+                noFill();
+                stroke(shadowColor);
+                strokeWeight(3);
+                rect(0, 0, boxSize, boxSize);
+              }
+            }, rot);
+          });
+        }
+        break;
+      case 'semicircles':
+        for (let i = 0; i < shapeCounts.semicircles; i++) {
+          let d = 90 * random(0.96, 1.44) * shapeSizeScale; // Diameter
+          let r = d / 2;
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          let isFilled = random() < fillProbability;
+          drawWrappedShape(x, y, r, () => {
+            if (isFilled) {
+              drawDropShadow(() => arc(0, 0, d, d, 0, 180, PIE), rot);
+            }
+            drawMainShape(colorMap.semicircles, () => {
+              if (isFilled) {
+                arc(0, 0, d, d, 0, 180, PIE);
+              } else {
+                noFill();
+                stroke(shadowColor);
+                strokeWeight(3);
+                arc(0, 0, d, d, 0, 180, PIE);
+              }
+            }, rot);
+          });
+        }
+        break;
+      case 'isoTriangles':
+        for (let i = 0; i < shapeCounts.isoTriangles; i++) {
+          let base = 60 * random(0.96, 1.44) * shapeSizeScale;
+          let height = 70 * random(0.96, 1.44) * shapeSizeScale;
+          let r = sqrt(sq(base / 2) + sq(height)); // Circumradius
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          let isFilled = random() < fillProbability;
+          drawWrappedShape(x, y, r, () => {
+            if (isFilled) {
+              drawDropShadow(() => {
+                triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+              }, rot);
+            }
+            drawMainShape(colorMap.isoTriangles, () => {
+              if (isFilled) {
+                triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+              } else {
+                noFill();
+                stroke(shadowColor);
+                strokeWeight(3);
+                triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
+              }
+            }, rot);
+          });
+        }
+        break;
+      case 'triangles':
+        for (let i = 0; i < shapeCounts.triangles; i++) {
+          let side = 90 * random(0.96, 1.44) * shapeSizeScale;
+          let h = (sqrt(3) / 2) * side; // Height of equilateral triangle
+          let r = sqrt(sq(side / 2) + sq(h / 2)); // Circumradius
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          let isFilled = random() < fillProbability;
+          drawWrappedShape(x, y, r, () => {
+            if (isFilled) {
+              drawDropShadow(() => {
+                triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+              }, rot);
+            }
+            drawMainShape(colorMap.triangles, () => {
+              if (isFilled) {
+                triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+              } else {
+                noFill();
+                stroke(shadowColor);
+                strokeWeight(3);
+                triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
+              }
+            }, rot);
+          });
+        }
+        break;
+      case 'squiggles':
+        for (let i = 0; i < shapeCounts.squiggles; i++) {
+          let humps = int(random(3, 6));
+          let spacing = 18 * random(0.96, 1.44) * shapeSizeScale;
+          let amplitude = 13.5 * random(0.96, 1.44) * shapeSizeScale;
+          let len = humps * spacing * TWO_PI / 10;
+          let r = sqrt(sq(len / 2) + sq(amplitude)) + 10; // Bounding radius
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          drawWrappedShape(x, y, r, () => {
+            // Draw drop shadow for squiggle
+            push();
+            translate(shadowOffset, shadowOffset);
+            rotate(rot);
+            stroke(shadowColor);
+            strokeWeight(4 * shapeSizeScale);
             noFill();
-            stroke(shadowColor);
-            strokeWeight(3);
-            triangle(-side / 2, h / 2, side / 2, h / 2, 0, -h / 2);
-          }
-        }, rot);
-      });
-    }
-  }
-
-  if (availableShapes.includes('semicircles')) {
-    // Place semicircles
-    for (let i = 0; i < shapeCounts.semicircles; i++) {
-      let d = 90 * random(0.96, 1.44) * shapeSizeScale; // Diameter
-      let r = d / 2;
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      let isFilled = random() < fillProbability;
-      drawWrappedShape(x, y, r, () => {
-        if (isFilled) {
-          drawDropShadow(() => arc(0, 0, d, d, 0, 180, PIE), rot);
-        }
-        drawMainShape(colorMap.semicircles, () => {
-          if (isFilled) {
-            arc(0, 0, d, d, 0, 180, PIE);
-          } else {
+            beginShape();
+            for (let j = 0; j < len; j++) {
+              let px = j;
+              let py = sin(j * (360 / spacing)) * amplitude;
+              vertex(px, py);
+            }
+            endShape();
+            pop();
+            // Draw main squiggle
+            push();
+            rotate(rot);
+            stroke(colorMap.squiggles);
+            strokeWeight(4 * shapeSizeScale);
             noFill();
-            stroke(shadowColor);
-            strokeWeight(3);
-            arc(0, 0, d, d, 0, 180, PIE);
-          }
-        }, rot);
-      });
-    }
-  }
-
-  if (availableShapes.includes('squiggles')) {
-    // Place squiggles
-    for (let i = 0; i < shapeCounts.squiggles; i++) {
-      let humps = int(random(3, 6));
-      let spacing = 18 * random(0.96, 1.44) * shapeSizeScale;
-      let amplitude = 13.5 * random(0.96, 1.44) * shapeSizeScale;
-      let len = humps * spacing * TWO_PI / 10;
-      let r = sqrt(sq(len / 2) + sq(amplitude)) + 10; // Bounding radius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      drawWrappedShape(x, y, r, () => {
-        // Draw drop shadow for squiggle
-        push();
-        translate(shadowOffset, shadowOffset);
-        rotate(rot);
-        stroke(shadowColor);
-        strokeWeight(4 * shapeSizeScale);
-        noFill();
-        beginShape();
-        for (let j = 0; j < len; j++) {
-          let px = j;
-          let py = sin(j * (360 / spacing)) * amplitude;
-          vertex(px, py);
+            beginShape();
+            for (let j = 0; j < len; j++) {
+              let px = j;
+              let py = sin(j * (360 / spacing)) * amplitude;
+              vertex(px, py);
+            }
+            endShape();
+            pop();
+          });
         }
-        endShape();
-        pop();
-        // Draw main squiggle
-        push();
-        rotate(rot);
-        stroke(colorMap.squiggles);
-        strokeWeight(4 * shapeSizeScale);
-        noFill();
-        beginShape();
-        for (let j = 0; j < len; j++) {
-          let px = j;
-          let py = sin(j * (360 / spacing)) * amplitude;
-          vertex(px, py);
+        break;
+      case 'dotGrids':
+        for (let i = 0; i < shapeCounts.dotGrids; i++) {
+          let gridSize = random(10, 20);
+          let spacing = 5 * random(1, 1.44) * shapeSizeScale;
+          let dotSize = 3 * random(1, 1.44) * shapeSizeScale;
+          let len = gridSize * spacing;
+          let r = len / 2 + 10; // Bounding radius
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          drawWrappedShape(x, y, r, () => {
+            push();
+            rotate(rot);
+            fill(colorMap.dotGrids);
+            noStroke();
+            // Draw grid of dots
+            for (let offset = -50; offset <= 50; offset += 10) {
+              for (let j = 0; j < len; j += spacing) {
+                let px = j;
+                let py = offset;
+                ellipse(px, py, dotSize);
+              }
+            }
+            pop();
+          });
         }
-        endShape();
-        pop();
-      });
-    }
-  }
-
-  if (availableShapes.includes('isoTriangles')) {
-    // Place isosceles triangles
-    for (let i = 0; i < shapeCounts.isoTriangles; i++) {
-      let base = 60 * random(0.96, 1.44) * shapeSizeScale;
-      let height = 70 * random(0.96, 1.44) * shapeSizeScale;
-      let r = sqrt(sq(base / 2) + sq(height)); // Circumradius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      let isFilled = random() < fillProbability;
-      drawWrappedShape(x, y, r, () => {
-        if (isFilled) {
-          drawDropShadow(() => {
-            triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
-          }, rot);
-        }
-        drawMainShape(colorMap.isoTriangles, () => {
-          if (isFilled) {
-            triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
-          } else {
+        break;
+      case 'sineWaves':
+        for (let i = 0; i < shapeCounts.sineWaves; i++) {
+          let humps = random(10, 20);
+          let spacing = 18 * random(0.96, 1.44) * shapeSizeScale;
+          let amplitude = random(1,3) * random(0.96, 1.44) * shapeSizeScale;
+          let len = humps * spacing * TWO_PI / 20;
+          let r = sqrt(sq(len / 2) + sq(amplitude)) + 10; // Bounding radius
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          drawWrappedShape(x, y, r, () => {
+            push();
+            rotate(rot);
+            stroke(colorMap.sineWaves);
+            strokeWeight(1 * shapeSizeScale);
             noFill();
-            stroke(shadowColor);
-            strokeWeight(3);
-            triangle(-base/2, height/2, base/2, height/2, 0, -height/2);
-          }
-        }, rot);
-      });
-    }
-  }
-
-  if (availableShapes.includes('ovals')) {
-    // Place ovals
-    for (let i = 0; i < shapeCounts.ovals; i++) {
-      let w = 75 * random(0.96, 1.44) * shapeSizeScale;
-      let h = 45 * random(0.96, 1.44) * shapeSizeScale;
-      let r = sqrt(sq(w/2) + sq(h/2)); // Circumradius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      let isFilled = random() < fillProbability;
-      drawWrappedShape(x, y, r, () => {
-        if (isFilled) {
-          drawDropShadow(() => ellipse(0, 0, w, h), rot);
+            // Draw 7 parallel sine waves
+            for (let offset = -50; offset <= 50; offset += 5) {
+              beginShape();
+              for (let j = 0; j < len; j++) {
+                let px = j;
+                let py = cos(j * (360 / spacing)) * amplitude + offset;
+                vertex(px, py);
+              }
+              endShape();
+            }
+            pop();
+          });
         }
-        drawMainShape(colorMap.ovals, () => {
-          if (isFilled) {
-            ellipse(0, 0, w, h);
-          } else {
-            noFill();
-            stroke(shadowColor);
-            strokeWeight(3);
-            ellipse(0, 0, w, h);
-          }
-        }, rot);
-      });
+        break;
     }
-  }
-
-  if (availableShapes.includes('sineWaves')) {
-    // Place sine waves
-    for (let i = 0; i < shapeCounts.sineWaves; i++) {
-      let humps = random(10, 20);
-      let spacing = 18 * random(0.96, 1.44) * shapeSizeScale;
-      let amplitude = random(1,3) * random(0.96, 1.44) * shapeSizeScale;
-      let len = humps * spacing * TWO_PI / 20;
-      let r = sqrt(sq(len / 2) + sq(amplitude)) + 10; // Bounding radius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      drawWrappedShape(x, y, r, () => {
-        // Draw main sinewave pattern
-        push();
-        rotate(rot);
-        stroke(colorMap.sineWaves);
-        strokeWeight(1 * shapeSizeScale);
-        noFill();
-        // Draw 7 parallel sine waves
-        for (let offset = -50; offset <= 50; offset += 5) {
-          beginShape();
-          for (let j = 0; j < len; j++) {
-            let px = j;
-            let py = cos(j * (360 / spacing)) * amplitude + offset;
-            vertex(px, py);
-          }
-          endShape();
-        }
-        pop();
-      });
-    }
-  }
-
-  if (availableShapes.includes('dotGrids')) {
-    // Place dot grids
-    for (let i = 0; i < shapeCounts.dotGrids; i++) {
-      let gridSize = random(10, 20);
-      let spacing = 5 * random(1, 1.44) * shapeSizeScale;
-      let dotSize = 3 * random(1, 1.44) * shapeSizeScale;
-      let len = gridSize * spacing;
-      let r = len / 2 + 10; // Bounding radius
-      let { x, y } = getNonOverlappingPosition(r);
-      let rot = random(360);
-      drawWrappedShape(x, y, r, () => {
-        push();
-        rotate(rot);
-        fill(colorMap.dotGrids);
-        noStroke();
-        // Draw grid of dots
-        for (let offset = -50; offset <= 50; offset += 10) {
-          for (let j = 0; j < len; j += spacing) {
-            let px = j;
-            let py = offset;
-            ellipse(px, py, dotSize);
-          }
-        }
-        pop();
-      });
-    }
-  }
+  });
 
   noStroke();
 }
