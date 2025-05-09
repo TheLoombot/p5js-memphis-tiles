@@ -31,6 +31,11 @@ function setup() {
   
   // Initialize with medium shape size
   setShapeSize('medium');
+  
+  // Only draw if we should render
+  if (window.shouldRender) {
+    redraw();
+  }
 }
 
 // Set the shape size scale factor
@@ -70,6 +75,9 @@ function regenerateTile() {
 
 // Main drawing function: sets up palette, background, dot grid, and places shapes
 function draw() {
+  // Only draw if we should render
+  if (!window.shouldRender) return;
+  
   placedShapes = [];
 
   // Color palette (all vibrant, pastel-like)

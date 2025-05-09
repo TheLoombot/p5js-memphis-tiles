@@ -148,7 +148,7 @@
         <div class="control-header">Tile Size</div>
         <input type="radio" id="size-small" name="size" value="small">
         <label for="size-small">🐣 Small</label>
-        <input type="radio" id="size-medium" name="size" value="medium" checked>
+        <input type="radio" id="size-medium" name="size" value="medium">
         <label for="size-medium">🐥 Medium</label>
         <input type="radio" id="size-large" name="size" value="large">
         <label for="size-large">🐤 Large</label>
@@ -157,7 +157,7 @@
         <div class="control-header">Shapes Size</div>
         <input type="radio" id="shapes-small" name="shapes" value="small">
         <label for="shapes-small">▂ Small</label>
-        <input type="radio" id="shapes-medium" name="shapes" value="medium" checked>
+        <input type="radio" id="shapes-medium" name="shapes" value="medium">
         <label for="shapes-medium">▆ Medium</label>
         <input type="radio" id="shapes-large" name="shapes" value="large">
         <label for="shapes-large">█ Large</label>
@@ -166,7 +166,7 @@
         <div class="control-header">Shape Count</div>
         <input type="radio" id="count-fewer" name="count" value="fewer">
         <label for="count-fewer">🎯 Fewer</label>
-        <input type="radio" id="count-usual" name="count" value="usual" checked>
+        <input type="radio" id="count-usual" name="count" value="usual">
         <label for="count-usual">🎨 The Usual Amount</label>
         <input type="radio" id="count-many" name="count" value="many">
         <label for="count-many">🎪 Far Too Many</label>
@@ -179,6 +179,9 @@
   <script src="p5.min.js"></script>
   <script src="sketch.js"></script>
   <script>
+    // Add a flag to control initial render
+    window.shouldRender = false;
+    
     document.getElementById('regen-btn').onclick = function() {
       if (window.regenerateTile) window.regenerateTile();
     };
@@ -200,6 +203,7 @@
           window.resizeCanvas(dimensions[size], dimensions[size]);
           if (window.regenerateTile) window.regenerateTile();
         }
+        localStorage.setItem('tileSize', this.value);
       });
     });
 
@@ -211,6 +215,7 @@
           window.setShapeSize(this.value);
           if (window.regenerateTile) window.regenerateTile();
         }
+        localStorage.setItem('shapeSize', this.value);
       });
     });
 
@@ -222,7 +227,40 @@
           window.setShapeCount(this.value);
           if (window.regenerateTile) window.regenerateTile();
         }
+        localStorage.setItem('shapeCount', this.value);
       });
+    });
+
+    // Restore settings from localStorage on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Wait for p5.js to be ready
+      const checkP5Ready = setInterval(() => {
+        if (window.resizeCanvas && window.setShapeSize && window.setShapeCount) {
+          clearInterval(checkP5Ready);
+          
+          // First, restore all settings without triggering renders
+          const tileSize = localStorage.getItem('tileSize') || 'medium';
+          const shapeSize = localStorage.getItem('shapeSize') || 'medium';
+          const shapeCount = localStorage.getItem('shapeCount') || 'usual';
+
+          // Set the radio buttons
+          document.getElementById('size-' + tileSize).checked = true;
+          document.getElementById('shapes-' + shapeSize).checked = true;
+          document.getElementById('count-' + shapeCount).checked = true;
+
+          // Apply the settings in sequence
+          window.resizeCanvas(
+            tileSize === 'small' ? 400 : tileSize === 'medium' ? 600 : 800,
+            tileSize === 'small' ? 400 : tileSize === 'medium' ? 600 : 800
+          );
+          window.setShapeSize(shapeSize);
+          window.setShapeCount(shapeCount);
+          
+          // Enable rendering and regenerate the tile
+          window.shouldRender = true;
+          if (window.regenerateTile) window.regenerateTile();
+        }
+      }, 100);
     });
   </script>
 </body>
