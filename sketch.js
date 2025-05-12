@@ -48,14 +48,14 @@ function setShapeSize(size) {
   shapeSizeScale = scales[size] || 1.0;
 }
 
-// Set the shape count mode
+// Set the shape count mode 
 function setShapeCount(mode) {
   shapeCountMode = mode;
 }
 
 // Get available shapes based on count mode
 function getAvailableShapes() {
-  const allShapes = ['squares', 'triangles', 'semicircles', 'squiggles', 'isoTriangles', 'ovals', 'sineWaves', 'dotGrids', 'stripeyCircles'];
+  const allShapes = ['squares', 'triangles', 'semicircles', 'squiggles', 'isoTriangles', 'ovals', 'sineWaves', 'dotGrids', 'stripeyCircles', 'spirals'];
   switch(shapeCountMode) {
     case 'fewer':
       return shuffle(allShapes).slice(0, 4);
@@ -137,6 +137,9 @@ function draw() {
       case 'stripeyCircles':
         shapeCounts[shape] = int(random(1, 3));
         break;
+      case 'spirals':
+        shapeCounts[shape] = int(random(2, 4));
+        break;
     }
   });
 
@@ -148,6 +151,7 @@ function draw() {
     'isoTriangles',
     'triangles',
     'squiggles',
+    'spirals',
     'dotGrids',
     'sineWaves'
   ];
@@ -380,6 +384,51 @@ function draw() {
               }
               endShape();
             }
+            pop();
+          });
+        }
+        break;
+      case 'spirals':
+        for (let i = 0; i < shapeCounts.spirals; i++) {
+          let d = 45 * random(0.96, 1.44) * shapeSizeScale; // Half the diameter of stripey circles
+          let r = d / 2;
+          let { x, y } = getNonOverlappingPosition(r);
+          let rot = random(360);
+          let spiralColor = colorMap.spirals;
+          let thickness = 4 * shapeSizeScale; // Like squiggle
+          let turns = random(2, 3); 
+          let points = int(turns * 100);
+          let maxTheta = turns * 360; // Use degrees instead of radians
+          let b = (r * 0.95) / maxTheta; // So the spiral reaches near the bounding radius at the end
+          drawWrappedShape(x, y, r, () => {
+            // Draw drop shadow for spiral
+            push();
+            translate(shadowOffset, shadowOffset);
+            rotate(rot);
+            stroke(shadowColor);
+            strokeWeight(thickness);
+            noFill();
+            beginShape();
+            for (let t = 0; t < points; t++) {
+              let theta = map(t, 0, points, 0, maxTheta);
+              let spiralR = b * theta;
+              vertex(cos(theta) * spiralR, sin(theta) * spiralR);
+            }
+            endShape();
+            pop();
+            // Draw main spiral
+            push();
+            rotate(rot);
+            noFill();
+            stroke(spiralColor);
+            strokeWeight(thickness);
+            beginShape();
+            for (let t = 0; t < points; t++) {
+              let theta = map(t, 0, points, 0, maxTheta);
+              let spiralR = b * theta;
+              vertex(cos(theta) * spiralR, sin(theta) * spiralR);
+            }
+            endShape();
             pop();
           });
         }
