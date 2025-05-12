@@ -15,7 +15,7 @@ let shapeCountMode = 'usual'; // Default to usual amount of shapes
 let fillProbability = 0.85; // 85% chance of shapes being filled
 
 function setup() {
-  pixelDensity(1);
+  pixelDensity(2);
   let cnv = createCanvas(600, 600);  // Start with medium size
   cnv.parent('sketch-holder');
   angleMode(DEGREES);
@@ -463,3 +463,40 @@ function getNonOverlappingPosition(radius) {
   // Fallback: just return a random position
   return { x: random(width), y: random(height) };
 }
+
+// Download tiled wallpaper
+function downloadTiledWallpaper(w, h, tileW, tileH, filename) {
+  let tileBuffer = createGraphics(tileW, tileH);
+  tileBuffer.pixelDensity(1); // Ensure 1:1 pixel mapping
+  tileBuffer.image(get(0, 0, tileW, tileH), 0, 0);
+
+  let wallpaperBuffer = createGraphics(w, h);
+  wallpaperBuffer.pixelDensity(1);
+  for (let x = 0; x < w; x += tileW) {
+    for (let y = 0; y < h; y += tileH) {
+      wallpaperBuffer.image(tileBuffer, x, y);
+    }
+  }
+  save(wallpaperBuffer, filename);
+}
+
+// Attach event listeners after DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  const mobileBtn = document.getElementById('download-mobile-wallpaper-btn');
+  const desktopBtn = document.getElementById('download-desktop-wallpaper-btn');
+  if (mobileBtn) {
+    mobileBtn.onclick = function() {
+      // Use current tile size for tiling
+      let tileW = width;
+      let tileH = height;
+      downloadTiledWallpaper(1179, 2556, tileW, tileH, 'memphis-iphone15pro-wallpaper.png');
+    };
+  }
+  if (desktopBtn) {
+    desktopBtn.onclick = function() {
+      let tileW = width;
+      let tileH = height;
+      downloadTiledWallpaper(2240, 1260, tileW, tileH, 'memphis-imac24-wallpaper.png');
+    };
+  }
+});
